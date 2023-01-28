@@ -1,0 +1,8 @@
+form method="post" action="login" class="card register"
+  h2 Login
+  label for="phone" Phone: 
+  .txt-container
+    input type="text" id="phone" name="phone" class="txt-input"
+  input type="submit" value="Login" class="register-btn"
+  - if session[:error] != nil
+    p class="error" #{session[:error]} 

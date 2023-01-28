@@ -1,0 +1,53 @@
+javascript:
+  function edit(id){
+    console.log("id!: " + id);
+    document.querySelector("#task-"+id+" .normal-mode").classList.toggle("show")
+    document.querySelector("#task-"+id+" .edit-mode").classList.toggle("show")
+  }
+
+div class="card info"
+  h2 Welcome #{user.name}!
+  - if user.role == "guest"
+    p Register or sign in to save your todos for later
+
+form id="new_task" class="card add" method="post" action="task"
+  .cb-container
+    input type="Submit" id="add-btn" value="+"
+  .txt-container
+    input type="text" placeholder="Add new todo..." class="txt-input" name="content" autocomplete="off"
+
+ul class="todos"
+  - for todo in todos
+    li class="card todo" id="task-#{todo.id}"
+      form class="cb-container" method="post" action="task/#{todo.id}/status"
+        input type="checkbox" onChange=="this.form.submit()" name="status" value="done" class="cb-input" checked=todo.checked
+        span class="check"
+      div class="normal-mode show"
+        p class="item" #{todo.content}
+        button class="edit-btn" onclick=="edit(#{todo.id})"
+          i class="uil uil-pen"
+      
+      .edit-mode
+        form method="post" action="task/#{todo.id}/edit" class="edit"
+          .txt-container
+            input type="text" value=todo.content name="content" autocomplete="off" class="txt-input"
+          button type="submit" class="edit-submit-btn"
+            i class="uil uil-check"
+
+      form method="post" action="task/#{todo.id}/delete" class="delete"
+        button class="delete-btn" onclick=="this.form.submit()"
+          i class="uil uil-trash"
+
+
+div class="card stat"
+  p class="corner"
+    span #{todos.select{|t| t.status != "done"}.length} items left
+  .filter
+    a href="?filter=all" class="#{session[:filter]=="all"&&"on"}" All
+    a href="?filter=active" class="#{session[:filter]=="active"&&"on"}" Active
+    a href="?filter=done" class="#{session[:filter]=="done"&&"on"}" Completed
+  .corner
+    form method="post" action="task/clear-completed"
+      input type="Submit" value="Clear Completed"
+
+
