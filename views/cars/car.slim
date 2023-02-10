@@ -1,0 +1,7 @@
+div.car id=car.id
+  div.title
+    h1 = car.id
+
+  - for scout in car.scouts
+    div.passenger
+      p = scout.name
