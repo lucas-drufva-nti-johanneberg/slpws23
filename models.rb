@@ -35,13 +35,16 @@ class UserError < StandardError
 end
 
 class User
-  attr_reader :id, :name, :phone, :role
+  attr_reader :id, :name, :phone, :role, :groups
 
   def initialize(data)
     @id = data["id"]
     @name = data["name"]
     @phone = data["phone"]
     @role = data["role"]
+    res = db.execute("SELECT groups.name FROM groups INNER JOIN group_rel ON groups.id = group_rel.group_id WHERE group_rel.user_id = ?", @id)
+    @groups = res.map{|data| data["name"]}
+
   end
 
   def self.create_parent(name, phone)
@@ -99,15 +102,14 @@ class Car
   
   end
 
-  def self.get_all(filter=nil)
-    if filter != nil
+  def self.get_all(filters=nil)
+    if filters != nil
       res = db.execute("SELECT cars.id as id, cars.status as status 
         FROM ((groups        
           INNER JOIN group_rel ON groups.id = group_rel.group_id) 
           INNER JOIN cars ON group_rel.car_id = cars.id) 
-        WHERE groups.name = ?", filter)
+        WHERE groups.name = " + filters.map{|x| "?"}.join(" OR groups.name = "), *filters)
     else
-      p "no filter"
       res = db.execute("SELECT * from cars")
     end
 

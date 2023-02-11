@@ -8,10 +8,20 @@ end
 get('/cars') do
   user = authorize!()
 
-  cars = Car.get_all()
+  session['filter'] = nil
 
-  p "bilar"
-  p cars
+  filter = params["filter"]
+
+  p "groups:"
+  p user.groups
+
+  if filter == "all" or user.groups.length == 0
+    session['filter'] = "all"
+    cars = Car.get_all()
+  else
+    # todo get real filter
+    cars = Car.get_all(user.groups)
+  end
 
   slim(:"cars/cars", locals: {cars: cars})
 end
