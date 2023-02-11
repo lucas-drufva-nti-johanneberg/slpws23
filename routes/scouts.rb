@@ -3,6 +3,6 @@ put('/scouts/:id/move/:car_id') do
   car_id = params["car_id"]
   p id, car_id
   # TODO not found scout class
-  Scout.update(id, car_id)
-  p "Updated scout"
+  Scout.move(id, car_id)
+  p "moved scout #{id} to car id #{car_id}"
 end

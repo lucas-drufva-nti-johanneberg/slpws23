@@ -34,30 +34,24 @@ addEventListener('mouseup', (event) => {
   const mx = event.clientX;
   const my = event.clientY;
 
-  const passengers = Array.from(document.getElementsByClassName("passenger"))
+  const cars = Array.from(document.getElementsByClassName("car"))
 
-  for(let i = 0; i < passengers.length; i++)
+  for(let i = 0; i < cars.length; i++)
   {
-    if(passengers[i] == movingItem) continue;
+    const bound = cars[i].getBoundingClientRect();
 
-    const bound = passengers[i].getBoundingClientRect();
-
-    if (my > bound.top - 80 && my < bound.bottom)
+    if (my > bound.top && my < bound.bottom)
     {
-      passengers[i].parentNode.insertBefore(originalItem, passengers[i])
+      cars[i].appendChild(originalItem)
       originalItem.style.visibility = 'visible';
-      //fetch('/scouts/car_id')
+
+      console.log("Moving scout: " + originalItem.getAttribute('id') + " to car: ")
+      fetch('/scouts/' + originalItem.getAttribute('id') + '/move/' + originalItem.parentNode.id, {method:'PUT'})
     }
   }
 
   movingItem.remove();
   movingItem = null;
- 
-  //cleanup
-  for (const passengerItem of passengers) {
-    passengerItem.style.transform = "";
-    passengerItem.style.visibility = 'visible';
-  }
 })
 
 addEventListener('mousemove', (event) => {
@@ -69,7 +63,7 @@ addEventListener('mousemove', (event) => {
 
   movingItem.style.transform = "translate(" + mx + "px, " + my + "px)";
 
-  const passengers = Array.from(document.getElementsByClassName("passenger"))
+  /*const passengers = Array.from(document.getElementsByClassName("passenger"))
 
   for (const passengerItem of passengers) {
     const bound = passengerItem.getBoundingClientRect()
@@ -84,5 +78,5 @@ addEventListener('mousemove', (event) => {
     else if(my < bound.bottom - 80){
       passengerItem.style.transform = "translate(0, 0)";
     }
-  }
+  }*/
 })

@@ -1,4 +1,5 @@
 def authorize!(role="parent")
+  p "1"
   if session[:user_id] == nil
     error 401
   end

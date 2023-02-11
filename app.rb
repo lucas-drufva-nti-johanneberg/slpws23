@@ -3,6 +3,7 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 require "sinatra/reloader"
+require 'slim/include'
 
 #1. Skapa ER + databas som kan hålla användare och todos. Fota ER-diagram, 
 #   lägg i misc-mapp
@@ -19,10 +20,13 @@ require_relative 'models'
 require_relative 'utils'
 require_relative 'routes/car'
 require_relative 'routes/user'
+require_relative 'routes/scouts'
 
-also_reload('models.rb', 'routes/car.rb', 'routes/user.rb')
+also_reload('models.rb', 'routes/car.rb', 'routes/user.rb', 'routes/scouts.rb')
 
 enable :sessions
+
+set :static_cache_control, [:public, max_age: 60]
 
 get('/') do
   user = authorize!()
@@ -32,13 +36,17 @@ get('/') do
 
   if user.role == "parent"
     car = Car.get_by_userid(user.id)
-    redirect '/car/#{car.id}'
+    redirect '/cars/#{car.id}'
   elsif user.role == "leader"
-    redirect '/car'
+    redirect '/cars'
   elsif user.role == "admin"
-    redirect '/car'
+    redirect '/cars'
   end
 
+end
+
+error 401 do
+  halt 401, "Unauthorized"
 end
 
 

@@ -11,60 +11,21 @@ class Scout
   attr_reader :id, :name, :contact, :status, :carid
 
   def initialize(data)
+    p "new scout"
+    p data
     @id = data["id"]
     @name = data["name"]
     @contact = data["contact"]
     @status = data["status"]
-    @carid = data["carid"]
+    @car_id = data["car_id"]
   end
 
   def self.create(name, contact)
     db.execute("INSERT INTO scouts (name, contact, status) VALUES (?, ?, 0)", name, contact)
   end
 
-  def self.get_all(user_id, filter="all")
-    return db.execute("SELECT * FROM todos WHERE user_id = ?", user_id).map {|data| Todo.new(data)}.select{|t| t.status==filter || filter=="all"}.sort_by{|t| t.status != nil ? t.status : ""}
-  end
-
-  def self.get_by_id(id)
-    t = db.execute("SELECT * FROM todos WHERE id = ?", id)
-    if t.length
-      return new(t.first)
-    else
-      return nil
-    end
-  end
-
-  def self.delete(id)
-    db.execute("DELETE FROM todos WHERE id = ?", id)
-  end
-
-  def delete
-    db.execute("DELETE FROM todos WHERE id = ?", @id)
-  end
-
-  def self.delete_all(user_id)
-    db.execute("DELETE FROM todos WHERE user_id = ?", user_id)
-  end
-
-  def self.edit(id, new_content)
-    db.execute("UPDATE todos SET content = ? WHERE id = ?", new_content, id)
-  end
-
-  def edit(new_content)
-    db.execute("UPDATE todos SET content = ? WHERE id = ?", new_content, @id)
-  end
-
-  def self.set_status(id, status)
-    db.execute("UPDATE todos SET status = ? WHERE id = ?", status, id)
-  end
-
-  def self.clear_completed(user_id)
-    db.execute("DELETE FROM todos WHERE user_id = ? AND status = 'done' ", user_id)
-  end
-
-  def change_user(new_user_id)
-    db.execute("UPDATE todos SET user_id = ? WHERE id = ?", new_user_id, @id)
+  def self.move(id, car_id)
+    db.execute("UPDATE scouts SET car_id = ? WHERE id = ?", car_id, id)
   end
 
 end
@@ -120,9 +81,38 @@ class User
 end
 
 class Car
+  attr_reader :id, :scouts
 
   def initialize(data)
     @id = data["id"]
+    res = db.execute("SELECT * FROM scouts WHERE car_id = ?", @id)
+    @scouts = res.map{|data| Scout.new(data)}
+  end
+
+  def self.get_by_id(id)
+    res = db.execute("SELECT * FROM cars WHERE id = ?", id)
+    if res.length
+      return Car.new(res.first)
+    end
+
+    return nil
+  
+  end
+
+  def self.get_all(filter=nil)
+    if filter != nil
+      res = db.execute("SELECT cars.id as id, cars.status as status 
+        FROM ((groups        
+          INNER JOIN group_rel ON groups.id = group_rel.group_id) 
+          INNER JOIN cars ON group_rel.car_id = cars.id) 
+        WHERE groups.name = ?", filter)
+    else
+      p "no filter"
+      res = db.execute("SELECT * from cars")
+    end
+
+    return res.map{|data| Car.new(data)}
+
   end
 
 end
