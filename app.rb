@@ -46,6 +46,7 @@ get('/') do
 end
 
 error 401 do
+  redirect '/login'
   halt 401, "Unauthorized"
 end
 

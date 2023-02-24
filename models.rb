@@ -28,6 +28,14 @@ class Scout
     db.execute("UPDATE scouts SET car_id = ? WHERE id = ?", car_id, id)
   end
 
+  def checked
+    return @status != "done" ? nil : "check"
+  end
+
+  def self.update_status(id, status)
+    db.execute("UPDATE scouts SET status = ? WHERE id = ?", status, id)
+  end
+
 end
 
 class UserError < StandardError

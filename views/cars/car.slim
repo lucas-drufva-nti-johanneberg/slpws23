@@ -1,7 +1,11 @@
 div.car id=car.id
   div.title
     h1 = car.id
-
+  
   - for scout in car.scouts
     div.passenger id=scout.id
+      - #input type="checkbox" name="scout-#{scout.id} value=scout.id
+      form method="post" action="/scouts/#{scout.id}/status"
+        input type="checkbox" onChange=="this.form.submit" name="status" value="done" class="cb-input" checked=scout.status
+      
       p = scout.name
