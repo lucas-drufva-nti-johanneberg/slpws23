@@ -6,6 +6,7 @@ div.car id=car.id
     div.passenger id=scout.id
       - #input type="checkbox" name="scout-#{scout.id} value=scout.id
       form method="post" action="/scouts/#{scout.id}/status"
-        input type="checkbox" onChange=="this.form.submit" name="status" value="done" class="cb-input" checked=scout.status
-      
+        input type="checkbox" onChange=="((event) => {fetch('/scouts/#{scout.id}/status', {method:'POST', body:event.target.checked})})(event)" name="status" value="done" class="cb-input" checked=scout.checked
+        - #input type="checkbox" onChange=="((event) => {console.log('test')})()" name="status" value="done" class="cb-input" checked=scout.status
+
       p = scout.name

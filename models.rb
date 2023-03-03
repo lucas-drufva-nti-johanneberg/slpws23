@@ -29,7 +29,7 @@ class Scout
   end
 
   def checked
-    return @status != "done" ? nil : "check"
+    return @status != "true" ? nil : "check"
   end
 
   def self.update_status(id, status)

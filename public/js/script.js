@@ -14,7 +14,8 @@ addEventListener('mousedown', (event) => {
   for (const passengerItem of passengers) {
     const bound = passengerItem.getBoundingClientRect()
     //console.log(bound);
-    if(my > bound.top && my < bound.bottom && mx < bound.right && mx > bound.left)
+    //bound.left +10 to compenseate for checkbox
+    if(my > bound.top && my < bound.bottom && mx < bound.right && mx > bound.left + 10)
     {
       console.log("Clicked!")
       movingItem = passengerItem.cloneNode(true);
@@ -80,3 +81,4 @@ addEventListener('mousemove', (event) => {
     }
   }*/
 })
+

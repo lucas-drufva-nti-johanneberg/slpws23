@@ -9,7 +9,13 @@ put('/scouts/:id/move/:car_id') do
 end
 
 post('/scouts/:id/status') do
-  Scout.update_status(params[:id], params[:status])
+  request.body.rewind
+  status = request.body.read
 
-  redirect '/'
+  p status
+
+  Scout.update_status(params[:id], status)
+
+
+  return 200
 end
