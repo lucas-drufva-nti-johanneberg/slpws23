@@ -1,6 +1,18 @@
 div.car id=car.id
   div.title
     h1 = car.id
+
+  div
+    - if car.status != "ready" && car.status != "left"
+      a href="/cars/#{car.id}/status?status=ready"
+        button redo
+
+    - if car.status == "ready"
+      a href="/cars/#{car.id}/status?status=left"
+        button kör nu
+
+  div
+    p status: #{car.status}
   
   - for scout in car.scouts
     div.passenger id=scout.id

@@ -16,6 +16,5 @@ post('/scouts/:id/status') do
 
   Scout.update_status(params[:id], status)
 
-
   return 200
 end

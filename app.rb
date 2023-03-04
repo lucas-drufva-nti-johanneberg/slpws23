@@ -36,7 +36,7 @@ get('/') do
 
   if user.role == "parent"
     car = Car.get_by_userid(user.id)
-    redirect '/cars/#{car.id}'
+    redirect '/cars/' + car.id.to_s
   elsif user.role == "leader"
     redirect '/cars'
   elsif user.role == "admin"

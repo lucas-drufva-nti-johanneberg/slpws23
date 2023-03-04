@@ -92,12 +92,13 @@ class User
 end
 
 class Car
-  attr_reader :id, :scouts
+  attr_reader :id, :scouts, :status
 
   def initialize(data)
     @id = data["id"]
     res = db.execute("SELECT * FROM scouts WHERE car_id = ?", @id)
     @scouts = res.map{|data| Scout.new(data)}
+    @status = data["status"]
   end
 
   def self.get_by_id(id)
@@ -108,6 +109,15 @@ class Car
 
     return nil
   
+  end
+
+  def self.get_by_userid(userid)
+    res = db.execute("SELECT cars.id, cars.status FROM cars INNER JOIN users on users.car_id = cars.id WHERE users.id = ?", userid)
+    if res.length
+      return Car.new(res.first)
+    end
+
+    return nil
   end
 
   def self.get_all(filters=nil)
@@ -123,6 +133,10 @@ class Car
 
     return res.map{|data| Car.new(data)}
 
+  end
+
+  def self.update_status(id, status)
+    db.execute("UPDATE cars SET status = ? WHERE id = ?", status, id)
   end
 
 end

@@ -26,4 +26,13 @@ get('/cars') do
   slim(:"cars/cars", locals: {cars: cars})
 end
 
-#put('/scouts')
+get('/cars/:id/status') do
+  id = params[:id]
+  status = params["status"]
+
+  p status
+
+  Car.update_status(id, status)
+
+  redirect '/cars/' + id
+end
