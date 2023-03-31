@@ -1,0 +1,13 @@
+form action="/scout/add" method="post"
+  label for="name" Namn
+  input type="text" id="name" name="name"
+  input type="submit" value="Lägg till scout"
+
+ul
+  - for scout in scouts
+    li
+      span = scout.name
+      form action="/scout/#{scout.id}/delete" method="post"
+        input type="submit" value="Ta bort"
+
+

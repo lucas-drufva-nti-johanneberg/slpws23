@@ -11,8 +11,6 @@ class Scout
   attr_reader :id, :name, :contact, :status, :carid
 
   def initialize(data)
-    p "new scout"
-    p data
     @id = data["id"]
     @name = data["name"]
     @contact = data["contact"]
@@ -21,7 +19,13 @@ class Scout
   end
 
   def self.create(name, contact)
-    db.execute("INSERT INTO scouts (name, contact, status) VALUES (?, ?, 0)", name, contact)
+    temp_db = db
+    temp_db.execute("INSERT INTO scouts (name, parent_phone, status) VALUES (?, ?, 'false')", name, contact)
+    return temp_db.last_insert_row_id
+  end
+
+  def self.delete(id)
+    db.execute("DELETE FROM scouts WHERE id = ?", id)
   end
 
   def self.move(id, car_id)
@@ -34,6 +38,11 @@ class Scout
 
   def self.update_status(id, status)
     db.execute("UPDATE scouts SET status = ? WHERE id = ?", status, id)
+  end
+
+  def self.get_all()
+    res = db.execute("SELECT * from scouts")
+    return res.map{|data| Scout.new(data)}
   end
 
 end

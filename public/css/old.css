@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+header {
+  background-color: #043A63;
+}
+
+h1, h2 {
+  margin: 0;
+}
+
+main {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+

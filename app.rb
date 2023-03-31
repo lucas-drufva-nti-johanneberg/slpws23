@@ -35,14 +35,24 @@ get('/') do
   p user.role
 
   if user.role == "parent"
-    car = Car.get_by_userid(user.id)
-    redirect '/cars/' + car.id.to_s
+    redirect '/driver'
   elsif user.role == "leader"
     redirect '/cars'
   elsif user.role == "admin"
-    redirect '/cars'
+    redirect '/admin'
   end
 
+end
+
+get('/admin') do
+  authorize!("admin")
+  slim(:admin)
+end
+
+get('/admin/scout') do
+  authorize!("admin")
+  scouts = Scout.get_all()
+  slim(:"admin/scouts", locals: {scouts: scouts})
 end
 
 error 401 do

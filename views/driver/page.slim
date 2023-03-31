@@ -10,7 +10,7 @@ div.parent-car-container
     h2 Scouter att hämta
 
   div
-    p status: #{car.status}
+    - #p status: #{car.status}
   
     - for scout in car.scouts
       div.passenger id=scout.id
@@ -20,3 +20,11 @@ div.parent-car-container
           - #input type="checkbox" onChange=="((event) => {console.log('test')})()" name="status" value="done" class="cb-input" checked=scout.status
 
         p = scout.name
+
+    div.status
+      - if car.status != "left"
+        div
+          p Alla barn i bilen?
+        button Jag kör nu
+
+

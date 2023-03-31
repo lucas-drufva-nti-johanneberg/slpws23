@@ -18,3 +18,19 @@ post('/scouts/:id/status') do
 
   return 200
 end
+
+post('/scout/add') do
+  authorize!('admin')
+
+  Scout.create(params['name'], "0")
+
+  redirect('/admin/scout')
+end
+
+post('/scout/:id/delete') do
+  authorize!('admin')
+
+  Scout.delete(params[:id])
+
+  redirect('/admin/scout')
+end
