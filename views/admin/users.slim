@@ -1,0 +1,53 @@
+form action="/user/add" method="post"
+  label for="name" Namn:
+  input type="text" id="name" name="name"
+
+  label for="phone" Telefonnummer:
+  input type="text" id="phone" name="phone"
+  
+  label for="role" Roll:
+  select id="role" name="role"
+    option value="admin" Admin
+    option value="leader" Ledare
+    option value="parent" Förälder
+
+  input type="submit" value="Lägg till Användare"
+
+ul
+  - for user in users
+    li
+      span = user.name
+      form action="/user/#{user.id}/update" method="post"
+        label for="role" Role:
+        select id="role" name="role"
+          - if user.role == "admin"
+            option selected="selected" value="admin" Admin
+          - else
+            option value="admin" Admin
+
+          - if user.role == "leader"
+            option selected="selected" value="leader" Ledare
+          - else
+            option value="leader" Ledare
+
+          - if user.role == "parent"
+            option selected="selected" value="parent" Förälder
+          - else
+            option value="parent" Förälder
+
+        label for="car" Bil:
+        select id="car" name="car"
+          option selected=user.car_id Ingen
+          - for car in cars
+            - if user.car_id == car.id
+              option selected="selected" value=car.id #{car.id}
+            - else
+              option value=car.id #{car.id}
+
+
+        input type="submit" value="Updatera"
+
+
+
+      form action="/user/#{user.id}/delete" method="post"
+        input type="submit" value="Ta bort"

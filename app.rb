@@ -55,6 +55,13 @@ get('/admin/scout') do
   slim(:"admin/scouts", locals: {scouts: scouts})
 end
 
+get('/admin/user') do
+  authorize!("admin")
+  users = User.get_all()
+  cars = Car.get_all()
+  slim(:"admin/users", locals: {users: users, cars: cars})
+end
+
 error 401 do
   redirect '/login'
   halt 401, "Unauthorized"

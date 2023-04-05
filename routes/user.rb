@@ -69,3 +69,30 @@ post '/login' do
   session[:user_id] = user.id
   redirect '/'
 end
+
+post('/user/add') do
+  authorize!('admin')
+
+  User.create(params['name'], params['phone'], params['role'])
+
+  redirect('/admin/user')
+end
+
+post('/user/:id/delete') do
+  authorize!('admin')
+
+  User.delete(params[:id])
+
+  redirect('/admin/user')
+end
+
+post '/user/:id/update' do
+  authorize!('admin')
+
+  user = User.find_by_id(params[:id])
+
+  user.update(params['role'], params['car'])
+
+  redirect('/admin/user')
+
+end

@@ -52,30 +52,33 @@ class UserError < StandardError
 end
 
 class User
-  attr_reader :id, :name, :phone, :role, :groups
+  attr_reader :id, :name, :phone, :role, :groups, :car_id
 
   def initialize(data)
     @id = data["id"]
     @name = data["name"]
     @phone = data["phone"]
     @role = data["role"]
+    @car_id = data["car_id"]
     res = db.execute("SELECT groups.name FROM groups INNER JOIN group_rel ON groups.id = group_rel.group_id WHERE group_rel.user_id = ?", @id)
     @groups = res.map{|data| data["name"]}
 
   end
 
-  def self.create_parent(name, phone)
+  def self.create(name, phone, role)
     temp_db = db
-    temp_db.execute("INSERT INTO users (name, phone, role) VALUES (?,?, 'parent')", name, phone)
+    temp_db.execute("INSERT INTO users (name, phone, role) VALUES (?,?, ?)", name, phone, role)
 
     return temp_db.last_insert_row_id
   end
 
-  def self.create_leader(name, phone)
-    temp_db = db
-    temp_db.execute("INSERT INTO users (name, phone, role) VALUES (?,?, 'leader')", name, phone)
+  def self.delete(id)
+    db.execute("DELETE FROM users WHERE id = ?", id)
+  end
 
-    return temp_db.last_insert_row_id
+  def update(role, car)
+    db.execute("UPDATE users SET role = ?, car_id = ? WHERE id = ?", role, car, @id)
+
   end
 
   def self.find_by_id(id)
@@ -96,6 +99,11 @@ class User
     end
 
     return nil
+  end
+
+  def self.get_all()
+    res = db.execute("SELECT * from users")
+    return res.map{|data| User.new(data)}
   end
 
 end
