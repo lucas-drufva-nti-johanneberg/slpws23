@@ -25,6 +25,7 @@ div.parent-car-container
       - if car.status != "left"
         div
           p Alla barn i bilen?
-        button Jag kör nu
+        a href="/cars/#{car.id}/status?status=left"
+          button Jag kör nu
 
 

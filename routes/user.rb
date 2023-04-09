@@ -1,53 +1,21 @@
+require_relative '../twilio.rb'
+
+LAST_ATTEMPT = Hash.new(0)
+
 get '/login' do
   slim(:'/users/login')
 end
-
 
 get '/logout' do
   session.clear
   redirect '/'
 end
 
-post '/register' do
-  # TODO error checking
-  # Check password retype matching
-  
-  session[:error] = nil
-
-  name = params[:name]
-  password = params[:password]
-  password2 = params[:password2]
-
-  if password != password2
-    session[:error] = "Passwords not matching"
-    redirect '/register'
-  end
-
-  begin
-
-    if session[:user_id] != nil
-      user = User.find_by_id(session[:user_id])
-
-      if user.role == "user"
-        # User is already registred
-        redirect '/'
-      end
-      
-      user.update_user(name, password, "user")
-    else
-      user_id = User.create(name, password, "user")
-      session[:user_id] = user_id
-    end
-  rescue UserError => error
-    session[:error] = error.message
-    redirect '/register'
-  end
-
-    
-  redirect '/'
-end
-
 post '/login' do
+  if Time.now.to_f - LAST_ATTEMPT[request.ip] < 1
+    error 429
+  end
+
   session[:error] = nil
 
   if session[:user_id] != nil
@@ -63,11 +31,36 @@ post '/login' do
   if user == nil
     #TODO error should not be seen risking data leak
     session[:error] = "User not found"
+    LAST_ATTEMPT[request.ip] = Time.now.to_f
     redirect '/login'
   end
 
-  session[:user_id] = user.id
-  redirect '/'
+  twilio_send_code(user.id)
+
+  session[:maybe_user] = user.id
+  redirect '/code'
+end
+
+get('/code') do
+  slim(:'/users/code')
+end
+
+post('/code') do
+  if Time.now.to_f - LAST_ATTEMPT[request.ip] < 1
+    error 429
+  end
+
+  code = params[:code] 
+  if twilio_verify_code(code) == session[:maybe_user]
+    session[:user_id] = session[:maybe_user]
+    redirect '/'
+  else
+    session[:error] = "Wrong code"
+    LAST_ATTEMPT[request.ip] = Time.now.to_f
+    redirect '/login'
+  end
+
+
 end
 
 post('/user/add') do

@@ -6,6 +6,7 @@ def db
   return database
 end
 
+# A Scout
 class Scout
  
   attr_reader :id, :name, :contact, :status, :carid
@@ -32,6 +33,8 @@ class Scout
     db.execute("UPDATE scouts SET car_id = ? WHERE id = ?", car_id, id)
   end
 
+  # Status checked
+  # @return [String] Returns nil or "check" to represent a checkbox for status
   def checked
     return @status != "true" ? nil : "check"
   end
@@ -137,6 +140,7 @@ class Car
     return nil
   end
 
+  # @param [Array<String>] filters, Array of group names to include
   def self.get_all(filters=nil)
     if filters != nil
       res = db.execute("SELECT cars.id as id, cars.status as status 

@@ -1,0 +1,8 @@
+form method="post" action="code" class="card register"
+  h2 Verification
+  label for="code" Enter code: 
+  .txt-container
+    input type="text" id="code" name="code" class="txt-input"
+  input type="submit" value="Enter" class="register-btn"
+  - if session[:error] != nil
+    p class="error" #{session[:error]} 

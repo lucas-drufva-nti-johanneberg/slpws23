@@ -5,28 +5,24 @@ require 'bcrypt'
 require "sinatra/reloader"
 require 'slim/include'
 
-#1. Skapa ER + databas som kan hålla användare och todos. Fota ER-diagram, 
-#   lägg i misc-mapp
-#2. Skapa ett formulär för att registrerara användare.
-#3. Skapa ett formulär för att logga in. Om användaren lyckas logga  
-#   in: Spara information i session som håller koll på att användaren är inloggad
-#4. Låt inloggad användare skapa todos i ett formulär (på en ny sida ELLER på sidan som visar todos.).
-#5. Låt inloggad användare updatera och ta bort sina formulär.
-#6. Lägg till felhantering (meddelande om man skriver in fel user/lösen)
-
-# Att ta reda på, får man använda active record?
-
 require_relative 'models'
 require_relative 'utils'
 require_relative 'routes/car'
 require_relative 'routes/user'
 require_relative 'routes/scouts'
+require_relative 'routes/admin'
 
-also_reload('models.rb', 'routes/car.rb', 'routes/user.rb', 'routes/scouts.rb')
+also_reload('models.rb', 'routes/car.rb', 'routes/user.rb', 'routes/scouts.rb', 'routes/admin.rb')
 
 enable :sessions
 
 set :static_cache_control, [:public, max_age: 60]
+
+before do
+  if request.path_info != "/login" and request.path_info != "/code" 
+      authorize!()
+  end
+end
 
 get('/') do
   user = authorize!()
@@ -44,27 +40,19 @@ get('/') do
 
 end
 
-get('/admin') do
-  authorize!("admin")
-  slim(:admin)
-end
 
-get('/admin/scout') do
-  authorize!("admin")
-  scouts = Scout.get_all()
-  slim(:"admin/scouts", locals: {scouts: scouts})
-end
-
-get('/admin/user') do
-  authorize!("admin")
-  users = User.get_all()
-  cars = Car.get_all()
-  slim(:"admin/users", locals: {users: users, cars: cars})
-end
 
 error 401 do
   redirect '/login'
   halt 401, "Unauthorized"
+end
+
+error 403 do
+  halt 403, "Forbidden"
+end
+
+error 429 do
+  halt 429, "Too Many Requests"
 end
 
 

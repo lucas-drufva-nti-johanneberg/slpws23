@@ -2,6 +2,7 @@
 #
 # @param [Integer] :id, The id of the car
 get('/cars/:id') do
+  authorize!('leader')
 
   car = Car.get_by_id(params["id"])
 
@@ -12,20 +13,16 @@ end
 #
 # @param [String] filter, "all" or group name
 get('/cars') do
-  user = authorize!()
+  user = authorize!('leader')
 
   session['filter'] = nil
 
   filter = params["filter"]
 
-  p "groups:"
-  p user.groups
-
   if filter == "all" or user.groups.length == 0
     session['filter'] = "all"
     cars = Car.get_all()
   else
-    # todo get real filter
     cars = Car.get_all(user.groups)
   end
 
@@ -34,18 +31,25 @@ end
 
 # Update car status
 #
-#
 # @param [Integer] :id, The id of the car
 # @param [String] status, The new status
 get('/cars/:id/status') do
-  id = params[:id]
+  id = params[:id].to_i
   status = params["status"]
 
-  p status
+  # Check if user has permission to edit this
+  user = authorize!()
+  if user.role == "parent"
+    error 403 unless user.car_id == id
+  end
 
   Car.update_status(id, status)
 
-  redirect '/cars/' + id
+  if user.role == "parent"
+    redirect '/driver'
+  else
+    redirect '/cars/' + id
+  end
 end
 
 get('/driver') do
